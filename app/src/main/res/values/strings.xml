@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Couponate</string>
+    <item name="visible" type="id" />
+    <item name="masked" type="id" />
 </resources>
