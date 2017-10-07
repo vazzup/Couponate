@@ -1,4 +1,4 @@
-package com.teamnothing.couponate.loginasynctask;
+package com.teamnothing.couponate.couponretrieveasynctask;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,21 +12,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Created by vazzup on 7/10/17.
  */
 
-public class LoginAsyncTask extends AsyncTask <String, Integer, Integer>{
+public class CouponRetrieveAsyncTask extends AsyncTask<String, String, ArrayList<String>> {
 
     HttpURLConnection urlConnection;
-
     @Override
-    protected Integer doInBackground(String... params) {
+    protected ArrayList<String> doInBackground(String... params) {
+        ArrayList <String> vals = new ArrayList<>();
         StringBuilder result = new StringBuilder();
-        int position = -1;
         try {
-            URL url = new URL("http://couponate.herokuapp.com/api/v1/users");
+            URL url = new URL("https://couponate.herokuapp.com/api/v1/links");
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
@@ -38,25 +39,34 @@ public class LoginAsyncTask extends AsyncTask <String, Integer, Integer>{
             }
             String jsonString = result.toString();
             JSONObject jsonResponse = new JSONObject(jsonString);
+            // Log.i("JSONString", jsonString);
             JSONArray dataResponse = jsonResponse.getJSONArray("data");
             int length = dataResponse.length();
             // Log.i("JsonNumber", "Size is: " + length);
             for(int i = 0; i < length; i++) {
                 JSONObject obj = dataResponse.getJSONObject(i);
-                String emailID = obj.getString("email");
-                // Log.i("JsonCompare", emailID.trim() + " " + params[0].trim());
-                if(emailID.trim().equalsIgnoreCase(params[0].trim())) {
-                    position = obj.getInt("id");
-                    break;
+                String couponCode = obj.getString("url");
+                String visible = obj.getString("visible");
+                if(obj.getInt("user_id") == Integer.parseInt(params[0])) {
+                    // Log.i("CouponCode", couponCode + " added");
+                    vals.add(couponCode);
+                    // Log.i("ValsSize", "" + vals.size());
+                } else {
+                    String[] visiblearr = visible.split(",");
+                    for (int j = 0; j < visiblearr.length; j++) {
+                        if (visiblearr[j].trim().equalsIgnoreCase(params[1])) {
+                            vals.add(couponCode);
+                        }
+                    }
                 }
             }
+
         }catch( Exception e) {
             e.printStackTrace();
         }
         finally {
             urlConnection.disconnect();
         }
-
-        return new Integer(position);
+        return vals;
     }
 }

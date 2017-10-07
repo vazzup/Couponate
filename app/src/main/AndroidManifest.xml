@@ -27,7 +27,8 @@
 
         <service android:name=".fgcheckerservice.FgCheckerService" />
 
-        <activity android:name=".CouponListActivity.CouponListActivity"></activity>
+        <activity android:name=".CouponListActivity.CouponListActivity"
+                    android:label="@string/coupon_activity_title"></activity>
     </application>
 
 </manifest>
