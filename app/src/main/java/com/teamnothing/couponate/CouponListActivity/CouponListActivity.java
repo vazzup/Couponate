@@ -1,10 +1,15 @@
 package com.teamnothing.couponate.CouponListActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.teamnothing.couponate.R;
 import com.teamnothing.couponate.couponretrieveasynctask.CouponRetrieveAsyncTask;
@@ -34,5 +39,16 @@ public class CouponListActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(getBaseContext(),
                 android.R.layout.simple_list_item_1, al);
         couponListView.setAdapter(adapter);
+
+        couponListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData data = ClipData.newPlainText("couponCode", item.trim());
+                clipboardManager.setPrimaryClip(data);
+                Toast.makeText(getBaseContext(), "Coupon copied to Clipboard!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
